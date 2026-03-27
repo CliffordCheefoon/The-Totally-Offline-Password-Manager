@@ -2,23 +2,23 @@ import hashlib
 import random
 import string
 
-def generate_hash(master_password: str, input_string: str, salt: str = "salt_string") -> str:
+def generate_hash(master_password: str, service_string: str, salt: str = "salt_string") -> str:
     """
     Create a cryptographic hash value by combining a master password, an input string, and a salt.
-    This function uses SHA-256 hashing algorithm to produce a secure, fixed-length hash output
-    that can be used for password verification, data integrity checks, or other security purposes.
+    Makes additional processing steps on top of standard hashing functions to take the output suitable 
+    for use as a password, e.g. Upper case and special characters.
 
     Args:
         master_password (str): The master password to use for hashing
-        input_string (str): The string to be hashed
+        service_string (str): The string to be hashed
         salt (str): The salt to use for hashing
 
     Returns:
         str: The generated hash as a hexadecimal string
     """
-    processed_string = input_string.lower().replace(' ', '')
-    
-    combined = master_password + processed_string + salt
+    service_string = service_string.lower().replace(' ', '')
+    salt = salt.lower().replace(' ', '')
+    combined = master_password + service_string + salt
 
     hash_object = hashlib.sha256(combined.encode())
     hash =  hash_object.hexdigest()
@@ -98,6 +98,15 @@ def randomize_special_characters(text:str, seed:int, special_chars, probability=
     return ''.join(result)
 
 if __name__ == "__main__":
-    hash = generate_hash("test", "Hello, World!")
-    print(hash)
+    # Get input from the user
+    master_password = input("Enter your master password: ")
+    service_string = input("Enter the service name: ")
+    salt = input("Enter username/email (optional): ")
+
+    # Trim the salt string and convert to None if empty
+    if not salt.strip():
+        salt = None
+    
+    result = generate_hash(master_password, service_string, salt)
+    print("Generated hash:", result)
 
