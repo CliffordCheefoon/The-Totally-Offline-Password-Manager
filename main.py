@@ -2,46 +2,50 @@ import hashlib
 import random
 import string
 
+
 def generate_hash(master_password: str, service_string: str, salt: str = "salt_string") -> str:
     """
     Create a cryptographic hash value by combining a master password, an input string, and a salt.
-    Makes additional processing steps on top of standard hashing functions to take the output suitable 
+    Makes additional processing steps on top of standard hashing functions to take the output suitable
     for use as a password, e.g. Upper case and special characters.
 
     Args:
         master_password (str): The master password to use for hashing
-        service_string (str): The string to be hashed
+        service_string (str): the name of the service that the password will be used for
         salt (str): The salt to use for hashing
 
     Returns:
         str: The generated hash as a hexadecimal string
     """
-    service_string = service_string.lower().replace(' ', '')
-    salt = salt.lower().replace(' ', '')
+    service_string = service_string.lower().replace(" ", "")
+    salt = salt.lower().replace(" ", "")
     combined = master_password + service_string + salt
 
     hash_object = hashlib.sha256(combined.encode())
-    hash =  hash_object.hexdigest()
-    
+    hash = hash_object.hexdigest()
 
     # The int() function with base 16 converts the hexadecimal string to a decimal integer
     # The 16 indicates that the input string is in base-16 (hexadecimal) format
     # This is necessary because hexdigest() returns a hexadecimal string representation of the hash
     seed = int(hash, 16)
 
-    #Ensure that the case_adjusted_hash contains at least one uppercase character
+    # Ensure that the case_adjusted_hash contains at least one uppercase character
     case_adjusted_hash = randomize_case(hash_string=hash, seed=seed)
     while not any(c.isupper() for c in case_adjusted_hash):
         seed = seed + 1
         case_adjusted_hash = randomize_case(hash_string=hash, seed=seed)
 
     special_chars = "!@#$%^&*()?"
-    case_adjusted_and_special_char_hash = randomize_special_characters(case_adjusted_hash, seed, special_chars)
+    case_adjusted_and_special_char_hash = randomize_special_characters(
+        case_adjusted_hash, seed, special_chars
+    )
     # Rerun the randomize_special_characters if case_adjusted_and_special_char_hash does not contain a special character
     while not any(c in special_chars for c in case_adjusted_and_special_char_hash):
         seed = seed + 1
-        case_adjusted_and_special_char_hash = randomize_special_characters(case_adjusted_hash, seed, special_chars)
-    return case_adjusted_and_special_char_hash
+        case_adjusted_and_special_char_hash = randomize_special_characters(
+            case_adjusted_hash, seed, special_chars
+        )
+    return service_string + "_" + case_adjusted_and_special_char_hash
 
 
 def randomize_case(hash_string: str, seed: int) -> str:
@@ -61,16 +65,16 @@ def randomize_case(hash_string: str, seed: int) -> str:
         if char.isalpha():
             # Randomly decide whether to uppercase the letter
             if random.choice([True, False]):
-                    result += char.upper()
+                result += char.upper()
             else:
-                    result += char
-        else:
                 result += char
+        else:
+            result += char
     return result
 
 
 # Randomize special characters in the final hash
-def randomize_special_characters(text:str, seed:int, special_chars, probability=0.3):
+def randomize_special_characters(text: str, seed: int, special_chars, probability=0.3):
     """
     Randomly replace characters in a string with special characters based on a given probability.
 
@@ -95,7 +99,8 @@ def randomize_special_characters(text:str, seed:int, special_chars, probability=
         else:
             result.append(char)
 
-    return ''.join(result)
+    return "".join(result)
+
 
 if __name__ == "__main__":
     # Get input from the user
@@ -105,8 +110,8 @@ if __name__ == "__main__":
 
     # Trim the salt string and convert to None if empty
     if not salt.strip():
-        salt = None
-    
-    result = generate_hash(master_password, service_string, salt)
-    print("Generated hash:", result)
+        result = generate_hash(master_password, service_string)
+    else:
+        result = generate_hash(master_password, service_string, salt)
 
+    print("Password:", result)
