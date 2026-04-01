@@ -6,12 +6,13 @@ A password manager that uses hashing to deterministically generate passwords.
 
 This password manager takes your master password, the name of a service, and an optional username/email as inputs, then uses cryptographic hashing to generate a unique password for each service. This means you never have to store or remember individual passwords - just remember one master password. The benefit of this approach is that naturally, the same password is never reused across different services, since each service's password is generated independently based on its unique name. The optional username parameter allows you to have multiple accounts on the same service, each with a distinct password.
 
-## Features
+## Technical Features
 
-- **Offline First**: No internet connection required
-- **Deterministic Generation**: Same inputs always produce same outputs
-- **Cryptographically Secure**: Uses strong hashing algorithms
-- **No Data Storage**: Never stores your passwords or master password
+- No Internet or Network Dependency: The application runs completely offline. No data is ever transmitted or stored externally.
+- Stateless Operating Security Model: Because output is generated on the fly, there are no vaults, caches, or persistent secrets. There is no database or file to attack. The attack surface is minimized to the code and the runtime environment.
+- Password Variation: Passwords for different services or under different usernames are never the same
+- Password Strength: Passwords are long and highly complex. 
+- Deterministic Output: Cryptographic hash functions ensure that identical inputs always yield identical outputs, enabling password regeneration without storage.
 
 ## Usage
 
@@ -22,7 +23,7 @@ This password manager takes your master password, the name of a service, and an 
 
 ## Security
 
-This approach eliminates the need to store passwords in databases or files, reducing attack surface significantly. The generated passwords are as secure as the master password itself.
+This approach eliminates the need to store passwords in databases or files (online or local), reducing attack surface significantly. 
 
 ## Requirements
 
@@ -35,7 +36,7 @@ No installation required - just run the script.
 
 ## License
 
-MIT
+ CC0-1.0 license
 
 ## Disclaimer
 
